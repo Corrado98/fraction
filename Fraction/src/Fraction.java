@@ -2,7 +2,7 @@
 public final class Fraction {
 
 	private final long numerator;
-	private final long denumerator;
+	private final long denominator;
 
 	public Fraction(long numerator) {
 		this(numerator, 1);
@@ -10,12 +10,12 @@ public final class Fraction {
 
 	public Fraction(long numerator, long denumerator) {
 		this.numerator = numerator;
-		this.denumerator = denumerator;
+		this.denominator = denumerator;
 	}
 
 	public Fraction(Fraction fraction) {
 		this.numerator = fraction.numerator;
-		this.denumerator = fraction.denumerator;
+		this.denominator = fraction.denominator;
 	}
 
 	public long getNumerator() {
@@ -23,7 +23,7 @@ public final class Fraction {
 	}
 
 	public long getDenumerator() {
-		return denumerator;
+		return denominator;
 	}
 
 	@Override
@@ -37,16 +37,18 @@ public final class Fraction {
 
 		Fraction other = (Fraction) obj;
 
-		return this.numerator == other.numerator && this.denumerator == other.denumerator;
+		return this.numerator == other.numerator && this.denominator == other.denominator;
 	}
 	
 	@Override
 	public String toString() {
-		return String.format("%s/%s", numerator, denumerator);
+		return String.format("%s/%s", numerator, denominator);
 	}
 	
 	public Fraction add(Fraction augend) {
-		return null;
+		long newDenominator = this.denominator * augend.denominator;
+		long newNumerator = (newDenominator / this.denominator * this.numerator) + (newDenominator / augend.denominator * augend.numerator); 
+		return new Fraction(newNumerator, newDenominator);
 	}
 	
 	public Fraction subtract(Fraction subtrahend) {
