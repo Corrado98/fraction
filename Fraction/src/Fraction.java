@@ -9,15 +9,16 @@ public final class Fraction {
 	}
 
 	public Fraction(long numerator, long denumerator) {
+		validate(denumerator);
 		this.numerator = numerator;
 		this.denominator = denumerator;
 	}
 
-	public Fraction(Fraction fraction) {
-		this.numerator = fraction.numerator;
-		this.denominator = fraction.denominator;
+	private void validate(long denumerator) throws IllegalArgumentException {
+		if(denumerator == 0) {
+			throw new IllegalArgumentException("Denumerator cannot be 0.");
+		}
 	}
-
 	public long getNumerator() {
 		return numerator;
 	}
@@ -35,9 +36,10 @@ public final class Fraction {
 			return false;
 		}
 
-		Fraction other = (Fraction) obj;
-
-		return this.numerator == other.numerator && this.denominator == other.denominator;
+		Fraction other = ((Fraction) obj).reduce();
+		Fraction t = this.reduce();
+		
+		return t.numerator == other.numerator && t.denominator == other.denominator;
 	}
 	
 	@Override
@@ -45,22 +47,38 @@ public final class Fraction {
 		return String.format("%s/%s", numerator, denominator);
 	}
 	
+	private Fraction reduce() {		
+		long gcd = 0;
+		long num = this.numerator;
+		long denom = this.denominator;
+		while(gcd != 1) {			
+			gcd = calculateGreatestCommonDivisor(num, denom);
+			num /= gcd;
+			denom /= gcd;
+		}
+		return new Fraction(num, denom);
+	}
+	
 	public Fraction add(Fraction augend) {
 		long newDenominator = this.denominator * augend.denominator;
 		long newNumerator = (newDenominator / this.denominator * this.numerator) + (newDenominator / augend.denominator * augend.numerator); 
-		return new Fraction(newNumerator, newDenominator);
+		return new Fraction(newNumerator, newDenominator).reduce();
 	}
 	
 	public Fraction subtract(Fraction subtrahend) {
-		return null;
+		long newDenominator = this.denominator * subtrahend.denominator;
+		long newNumerator = (newDenominator / this.denominator * this.numerator) - (newDenominator / subtrahend.denominator * subtrahend.numerator); 
+		return new Fraction(newNumerator, newDenominator).reduce();
 	}
 	
 	public Fraction multiply(Fraction multiplicand) {
-		return null;
+		long newDenominator = this.denominator * multiplicand.denominator;
+		long newNumerator = this.numerator * multiplicand.numerator;
+		return new Fraction(newNumerator, newDenominator).reduce();
 	}
 	
 	public Fraction divide(Fraction divisor) {
-		return null;
+		return multiply(new Fraction(divisor.denominator, divisor.numerator));
 	}
 
 	static long calculateGreatestCommonDivisor(long a, long b) {
